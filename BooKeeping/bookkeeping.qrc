@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>bookKeeping.qss</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>images/button_close.png</file>
+        <file>images/button_close_hover.png</file>
+        <file>images/Head.png</file>
+        <file>images/button_first_page.png</file>
+        <file>images/button_first_page1.png</file>
+        <file>images/button_last_page.png</file>
+        <file>images/button_last_page_1.png</file>
+        <file>images/button_next_page.png</file>
+        <file>images/button_next_page_1.png</file>
+        <file>images/button_pre_page.png</file>
+        <file>images/button_pre_page_1.png</file>
+        <file>images/desktop.png</file>
+        <file>images/defalut.jpg</file>
+    </qresource>
+</RCC>

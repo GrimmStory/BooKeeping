@@ -1,0 +1,55 @@
+/*******************************LoginDialog*******************************************************/
+LoginDialog QWidget#widgetGround{
+    background-color:#F0F0F0;
+}
+
+
+LoginDialog QPushButton#pushButtonClose{
+    border-image:url(:/images/images/button_close.png);
+}
+
+LoginDialog QPushButton#pushButtonClose::hover{
+    border-image:url(:/images/images/button_close_hover.png);
+}
+
+LoginDialog QPushButton#pushButtonLogin{
+    border-right:1px solid #0ab197;
+}
+
+LoginDialog QLabel#labeHead{
+    border:1px solid grey;
+}
+
+/*******************************MainWindow*******************************************************/
+
+MainWindow QPushButton#pushButtonFirst{
+    border-image:url(:/images/images/button_first_page.png);
+}
+
+MainWindow QPushButton#pushButtonFirst::hover{
+    border-image:url(:/images/images/button_first_page1.png);
+}
+
+MainWindow QPushButton#pushButtonLast{
+    border-image:url(:/images/images/button_last_page.png);
+}
+
+MainWindow QPushButton#pushButtonFirst::hover{
+    border-image:url(:/images/images/button_last_page_1.png);
+}
+
+MainWindow QPushButton#pushButtonNext{
+    border-image:url(:/images/images/button_next_page.png);
+}
+
+MainWindow QPushButton#pushButtonNext::hover{
+    border-image:url(:/images/images/button_next_page_1.png);
+}
+
+MainWindow QPushButton#pushButtonPre{
+    border-image:url(:/images/images/button_pre_page.png);
+}
+
+MainWindow QPushButton#pushButtonPre::hover{
+    border-image:url(:/images/images/button_pre_page_1.png);
+}

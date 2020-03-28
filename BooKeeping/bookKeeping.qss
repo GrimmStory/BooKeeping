@@ -1,3 +1,12 @@
+/*******************************userInfoDialog*******************************************************/
+userInfoDialog QTreeWidget#setUpItem::item{
+    margin:10px;
+}
+
+userInfoDialog QPushButton#pushButtonConfirm::hover{
+    background-color:#f10000;
+}
+
 /*******************************LoginDialog*******************************************************/
 LoginDialog QWidget#widgetGround{
     background-color:#F0F0F0;

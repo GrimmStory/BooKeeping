@@ -42,9 +42,9 @@ private slots:
 
     void on_pushButtonClose_clicked();
 
-    void imelResult(bool result);
+    void imelResult(bool result, QString msg);
 
-    void passwordLogin(bool result);
+    void passwordLogin(bool result, QString msg);
 private:
     Ui::LoginDialog *ui;
     QNetworkAccessManager *manager;

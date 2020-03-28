@@ -16,8 +16,10 @@
 #include <QJsonParseError>
 #include <QResizeEvent>
 #include <QSystemTrayIcon>
+#include <QEvent>
 #include "cvlink.h"
 #include "logindialog.h"
+#include "userinfodialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -30,6 +32,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+protected:
+    virtual bool eventFilter(QObject *obj, QEvent *event);
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *manager;
@@ -48,7 +52,9 @@ private:
     bool addFlag = true;
     int mHeight;
     int mWidght;
+    userInfoDialog *userInfoSetup;
     initMenu();
+
 private slots:
     void bookKeeping();
     void outBookKeeping();
@@ -64,6 +70,8 @@ private slots:
     void queryUsers(QMap<int,QString> map, QString roomId, QString room);
     void queryBookKeeping(QJsonArray dataArrary);
     void bookResult(bool bookResult);
+    void lastLoginTime(qint64 time);
+    void userInfoSetupShow();
 };
 
 #endif // MAINWINDOW_H

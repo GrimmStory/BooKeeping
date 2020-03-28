@@ -11,6 +11,8 @@
 #include <QJsonDocument>
 #include <QDebug>
 #include <QJsonArray>
+#include <QApplication>
+#include "global.h"
 
 
 class Cvlink : public QObject
@@ -29,16 +31,27 @@ private:
     QByteArray data_json;
     QNetworkAccessManager *manager;
     QMap<int, QString> userMap;
+    void loginResult(QJsonObject obj);
+    void imelLoginResult(QJsonObject obj);
+    void loginLogResult(QJsonObject obj);
+    void changePassResult(QJsonObject obj);
+    void getUesrInfo(QJsonObject obj);
+    void changeHead(QJsonObject obj);
+    void queryRoomMate(QJsonObject obj);
+    void getBookHistory(QJsonObject obj);
 
 private slots:
     void replyFinished(QNetworkReply *);
 
 signals:
-    void imelLogin(bool loginResult);
-    void passwordLogin(bool loginResult);
+    void imelLogin(bool loginResult, QString msg);
+    void passwordLogin(bool loginResult, QString msg);
     void queryUsers(QMap<int,QString> map, QString roomId, QString room);
     void queryBookKeeping(QJsonArray dataArrary);
     void bookResult(bool bookResult);
+    void lastLoginTime(qint64 time);
+    void changePasswordResult(bool result, QString msg);
+    void changeHeadResult(bool result);
 };
 
 extern Cvlink mainlink;

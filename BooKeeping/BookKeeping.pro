@@ -20,15 +20,21 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     logindialog.cpp \
     global.cpp \
-    cvlink.cpp
+    cvlink.cpp \
+    systemsetupdialog.cpp \
+    userinfodialog.cpp
 
 HEADERS  += mainwindow.h \
     logindialog.h \
     global.h \
-    cvlink.h
+    cvlink.h \
+    systemsetupdialog.h \
+    userinfodialog.h
 
 FORMS    += mainwindow.ui \
-    logindialog.ui
+    logindialog.ui \
+    systemsetupdialog.ui \
+    userinfodialog.ui
 
 RESOURCES += \
     bookkeeping.qrc

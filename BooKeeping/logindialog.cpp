@@ -56,7 +56,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     if(userName.isNull() || userName.isEmpty()){
         showLoginMenu();
     }
-    mainlink.setUrl("https://bookkeeping.javed.club/user/loginByImel");
+    mainlink.setUrl(Global::bookUrl + "/user/loginByImel");
     QJsonObject json;
     json.insert("account",userName);
     json.insert("imel",UUID);
@@ -136,7 +136,7 @@ void LoginDialog::on_pushButtonLogin_clicked()
         userName = username;
         passWord = password;
 
-        mainlink.setUrl("https://bookkeeping.javed.club/user/loginByPassword");
+        mainlink.setUrl(Global::bookUrl + "/user/loginByPassword");
         QJsonObject json;
         json.insert("account", username);
         json.insert("password", password);
@@ -145,11 +145,11 @@ void LoginDialog::on_pushButtonLogin_clicked()
         mainlink.post();
 
     } else if(loginFlag == "success"){
+        loginFlag = "success";
         if(userName!="" && passWord!=""){
             Global::IMConfig->setValue("login/username",userName);
             Global::IMConfig->setValue("login/password",passWord);
         }
-        Global::globalManager = manager;
         this->accept();
     }
 }
@@ -159,18 +159,31 @@ void LoginDialog::on_pushButtonClose_clicked()
     this->close();
 }
 
-void LoginDialog::imelResult(bool result)
+void LoginDialog::imelResult(bool result, QString msg)
 {
     if(result){
-       loginFlag = "success";
-       ui->labelChangeName->show();
+        loginFlag = "success";
+        ui->labelChangeName->show();
+    } else {
+        loginFlag = "failed";
+        QMessageBox::warning(this, "错误", msg, "OK");
     }
 }
 
-void LoginDialog::passwordLogin(bool result)
+void LoginDialog::passwordLogin(bool result, QString msg)
 {
-    loginFlag = "success";
-    on_pushButtonLogin_clicked();
+    if(result){
+        loginFlag = "success";
+        if(userName!="" && passWord!=""){
+            Global::IMConfig->setValue("login/username",userName);
+            Global::IMConfig->setValue("login/password",passWord);
+        }
+        this->accept();
+    } else {
+        loginFlag = "failed";
+        QMessageBox::warning(this, "错误", msg, "OK");
+    }
+
 }
 
 /**

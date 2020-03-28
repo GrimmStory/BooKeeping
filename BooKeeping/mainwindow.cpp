@@ -11,12 +11,11 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle("记账助手");
     initMenu();
     initHead();
-    manager =new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinished(QNetworkReply*)));
     QMap<QString, QString> map;
     map.insert("getUserInfo","true");
     map.insert("userName",Global::IMConfig->value("login/username").toString());
-    mainlink.postHttpRequest("https://bookkeeping.javed.club/lodgingHouse/login_user", map);
+    mainlink.postHttpRequest(Global::bookUrl + "/lodgingHouse/login_user", map);
+    mainlink.postHttpRequest(Global::bookUrl + "/user/getDetail", map);
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon();
     trayIcon->setToolTip("BOOK");
     trayIcon->setIcon(QIcon(":/images/images/desktop.png"));
@@ -33,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&mainlink, &Cvlink::queryUsers, this, &MainWindow::queryUsers);
     connect(&mainlink, &Cvlink::queryBookKeeping, this, &MainWindow::queryBookKeeping);
     connect(&mainlink, &Cvlink::bookResult, this, &MainWindow::bookResult);
+    connect(&mainlink, &Cvlink::lastLoginTime, this, &MainWindow::lastLoginTime);
+
 }
 
 
@@ -45,6 +46,25 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete trayMenu;
+    delete userInfoSetup;
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if(obj == ui->labelHead){
+        if(event->type()==QEvent::MouseButtonPress)
+        {
+            qDebug() << "head!" << endl;
+
+        }
+        if(event->type()==QEvent::MouseMove)
+        {
+
+        }
+    }
+
+   return MainWindow::eventFilter(obj, event);
 }
 
 void MainWindow::initHead()
@@ -61,6 +81,7 @@ void MainWindow::initHead()
 
 MainWindow::initMenu()
 {
+    userInfoSetup = new userInfoDialog();
     ui->widgetBook->hide();
     ui->widgetHistory->hide();
     ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
@@ -96,6 +117,8 @@ MainWindow::initMenu()
         qApp->quit();
     });
     QMenu *menu1 = ui->menuBar->addMenu("设置");
+    QAction *userInfoSetup = menu1->addAction("个人信息");
+    connect(userInfoSetup, &QAction::triggered, this, &MainWindow::userInfoSetupShow);
     globalNum = 1;
     pageSize = Global::IMConfig->value("mainwindow/pagesize").toString();
 }
@@ -183,7 +206,7 @@ void MainWindow::on_pushButtonBook_clicked()
     bookKeepingMap.insert("credential","");
     bookKeepingMap.insert("lodgingHouseId",roomId);
 
-    mainlink.postHttpRequest("https://bookkeeping.javed.club/bookkeeping", bookKeepingMap);
+    mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping", bookKeepingMap);
 }
 
 void MainWindow::historyKeeping()
@@ -199,7 +222,7 @@ void MainWindow::historyKeeping()
     QMap<QString, QString> bookHistory;
     bookHistory.insert("pageNum", QString::number(globalNum));
     bookHistory.insert("pageSize", pageSize);
-    mainlink.postHttpRequest("https://bookkeeping.javed.club/bookkeeping/all", bookHistory);
+    mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping/all", bookHistory);
 }
 
 void MainWindow::on_pushButtonFirst_clicked()
@@ -207,7 +230,7 @@ void MainWindow::on_pushButtonFirst_clicked()
     QMap<QString, QString> bookHistory;
     bookHistory.insert("pageNum", "1");
     bookHistory.insert("pageSize", pageSize);
-    mainlink.postHttpRequest("https://bookkeeping.javed.club/bookkeeping/all", bookHistory);
+    mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping/all", bookHistory);
 
 }
 
@@ -219,7 +242,7 @@ void MainWindow::on_pushButtonPre_clicked()
         QMap<QString, QString> bookHistory;
         bookHistory.insert("pageNum", "1");
         bookHistory.insert("pageSize", pageSize);
-        mainlink.postHttpRequest("https://bookkeeping.javed.club/bookkeeping/all", bookHistory);
+        mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping/all", bookHistory);
         globalNum = 1;
         addFlag = true;
         ui->labelPage->setText(QString::number(globalNum));
@@ -229,7 +252,7 @@ void MainWindow::on_pushButtonPre_clicked()
         QMap<QString, QString> bookHistory;
         bookHistory.insert("pageNum", QString::number(globalNum));
         bookHistory.insert("pageSize", pageSize);
-        mainlink.postHttpRequest("https://bookkeeping.javed.club/bookkeeping/all", bookHistory);
+        mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping/all", bookHistory);
         ui->labelPage->setText(QString::number(globalNum));
     }
 
@@ -244,7 +267,7 @@ void MainWindow::on_pushButtonNext_clicked()
     QMap<QString, QString> bookHistory;
     bookHistory.insert("pageNum", QString::number(globalNum));
     bookHistory.insert("pageSize", pageSize);
-    mainlink.postHttpRequest("https://bookkeeping.javed.club/bookkeeping/all", bookHistory);
+    mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping/all", bookHistory);
     ui->labelPage->setText(QString::number(globalNum));
 }
 
@@ -330,3 +353,16 @@ void MainWindow::bookResult(bool bookResult)
         ui->lineEditPS->clear();
     }
 }
+
+void MainWindow::lastLoginTime(qint64 time)
+{
+    QString lastLoginTime = Global::parseTime_t(time);
+    ui->labelLastTime->setText(lastLoginTime);
+}
+
+void MainWindow::userInfoSetupShow()
+{
+    userInfoSetup->show();
+}
+
+

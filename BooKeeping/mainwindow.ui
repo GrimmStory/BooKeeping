@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>746</width>
+    <width>760</width>
     <height>505</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>150</width>
+      <width>161</width>
       <height>480</height>
      </rect>
     </property>
@@ -38,9 +38,12 @@
       <rect>
        <x>0</x>
        <y>150</y>
-       <width>151</width>
+       <width>161</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
     <widget class="Line" name="line_4">
@@ -60,9 +63,9 @@
    <widget class="QWidget" name="widgetBook" native="true">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>159</x>
       <y>0</y>
-      <width>600</width>
+      <width>601</width>
       <height>480</height>
      </rect>
     </property>
@@ -201,7 +204,7 @@
     <widget class="Line" name="line_3">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>8</x>
        <y>0</y>
        <width>3</width>
        <height>450</height>
@@ -216,7 +219,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>600</width>
+       <width>610</width>
        <height>3</height>
       </rect>
      </property>
@@ -240,9 +243,9 @@
    <widget class="QWidget" name="widgetHistory" native="true">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>159</x>
       <y>0</y>
-      <width>600</width>
+      <width>601</width>
       <height>480</height>
      </rect>
     </property>
@@ -343,7 +346,7 @@
     <widget class="Line" name="line_2">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>8</x>
        <y>0</y>
        <width>3</width>
        <height>450</height>
@@ -358,7 +361,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>600</width>
+       <width>610</width>
        <height>3</height>
       </rect>
      </property>
@@ -370,9 +373,9 @@
    <widget class="QWidget" name="widgetOut" native="true">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>159</x>
       <y>0</y>
-      <width>600</width>
+      <width>601</width>
       <height>480</height>
      </rect>
     </property>
@@ -385,7 +388,7 @@
     <widget class="Line" name="line">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>8</x>
        <y>0</y>
        <width>3</width>
        <height>450</height>
@@ -400,7 +403,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>600</width>
+       <width>610</width>
        <height>3</height>
       </rect>
      </property>
@@ -415,7 +418,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>746</width>
+     <width>760</width>
      <height>26</height>
     </rect>
    </property>

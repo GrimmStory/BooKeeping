@@ -1,7 +1,7 @@
 #include "global.h"
 
 QSettings* Global::IMConfig;
-QString Global::getUserIfon = "http://localhost:8888/bookKeeping-web/getUserInfo.do";
+QString Global::bookUrl;
 QList<QNetworkCookie> Global::cookies;
 QNetworkAccessManager* Global::globalManager;
 
@@ -43,7 +43,6 @@ QString Global::getWMIC(const QString &cmd)
 */
 QByteArray Global::imageToBase64(QString imagePath)
 {
-    qDebug() << "imagePath" << imagePath << endl;
     QImage image(imagePath);
     QByteArray ba;
     QBuffer buf(&ba);
@@ -54,7 +53,19 @@ QByteArray Global::imageToBase64(QString imagePath)
     return hexed;
 }
 
-
+bool Global::base64ToImage(QString base64, QString filePath)
+{
+    QPixmap image;
+    qDebug() << "base64 is " << base64 << endl;
+    image.loadFromData(QByteArray::fromBase64(base64.toLocal8Bit()));
+    QFile file(filePath);
+    file.open(QIODevice::WriteOnly);
+    if(image.save(&file, "JPG")){
+        return true;
+    } else {
+        return false;
+    }
+}
 
 /**
 * @brief    解析时间戳
@@ -64,7 +75,7 @@ QByteArray Global::imageToBase64(QString imagePath)
 QString Global::parseTime_t(qint64 time_t)
 {
     QDateTime time = QDateTime::fromTime_t(time_t / 1000);
-    QString result = time.toString("yyyy-MM-dd hh:mm:ss");
+    QString result = time.toString("yyyy/MM/dd hh:mm:ss");
     return result;
 }
 

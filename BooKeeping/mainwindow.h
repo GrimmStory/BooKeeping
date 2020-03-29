@@ -16,7 +16,9 @@
 #include <QJsonParseError>
 #include <QResizeEvent>
 #include <QSystemTrayIcon>
+#include <QRegExpValidator>
 #include <QEvent>
+#include <QMovie>
 #include "cvlink.h"
 #include "logindialog.h"
 #include "userinfodialog.h"
@@ -39,9 +41,11 @@ private:
     QNetworkAccessManager *manager;
     bool postHttpRequest(QUrl url, QMap<QString,QString> argMap);
     void initUser();
-    void initHead();
     QString roomId;
     QString room;
+    QMenu *menu;
+    QString imageMD5;
+    QAction *outBookAction;
     QAction *reSetAction;
     QAction *quitAction;
     QMenu *trayMenu;
@@ -69,9 +73,14 @@ private slots:
     void closeMenu();
     void queryUsers(QMap<int,QString> map, QString roomId, QString room);
     void queryBookKeeping(QJsonArray dataArrary);
-    void bookResult(bool bookResult);
+    void bookResult(bool bookResult, QString msg);
     void lastLoginTime(qint64 time);
     void userInfoSetupShow();
+    void outBook(QJsonObject obj);
+    void outBookError(QString msg);
+    void on_pushButtonPic_clicked();
+    void picScanResult(QJsonObject obj);
+    void initHead();
 };
 
 #endif // MAINWINDOW_H

@@ -5,8 +5,11 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QFileDialog>
+#include "global.h"
 #include "cvlink.h"
 
+
+static const int RETCODE_RESTART = 773;
 namespace Ui {
 class userInfoDialog;
 }
@@ -19,6 +22,7 @@ public:
     explicit userInfoDialog(QWidget *parent = 0);
     ~userInfoDialog();
 
+
 private slots:
     void on_pushButtonConfirm_clicked();
 
@@ -26,6 +30,12 @@ private slots:
     void on_pushButtonSelect_clicked();
 
     void on_pushButtonHeadConfirm_clicked();
+
+    void changePassResult(bool result, QString msg);
+
+    void changeHeadResult(bool result);
+signals:
+    void changeHead();
 
 private:
     Ui::userInfoDialog *ui;

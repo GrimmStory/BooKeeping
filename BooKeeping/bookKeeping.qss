@@ -1,6 +1,20 @@
 /*******************************userInfoDialog*******************************************************/
+userInfoDialog QTreeWidget#setUpItem{
+    border:0px;
+}
+
 userInfoDialog QTreeWidget#setUpItem::item{
-    margin:10px;
+    margin-top:10px;
+    height:20px;
+}
+
+userInfoDialog QTreeWidget#setUpItem::item::selected{
+    color:#0099FF;
+    border:0px;
+}
+
+userInfoDialog QTreeWidget#setUpItem::item::hover{
+    background-color:#F0F0F0;
 }
 
 userInfoDialog QPushButton#pushButtonConfirm::hover{
@@ -18,7 +32,7 @@ LoginDialog QPushButton#pushButtonClose{
 }
 
 LoginDialog QPushButton#pushButtonClose::hover{
-    border-image:url(:/images/images/button_close_hover.png);
+    border-image:url( :/images/images/button_close_hover.png);
 }
 
 LoginDialog QPushButton#pushButtonLogin{
@@ -62,3 +76,14 @@ MainWindow QPushButton#pushButtonPre{
 MainWindow QPushButton#pushButtonPre::hover{
     border-image:url(:/images/images/button_pre_page_1.png);
 }
+
+MainWindow QTreeWidget#treeWidgetHistory::item{
+    height:30px;
+    margin-left:10px;
+    font-size:10px;
+}
+
+MainWindow QTreeWidget#treeWidgetHistory::item::hover{
+     background-color:#F0F0F0;
+}
+

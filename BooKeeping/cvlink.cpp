@@ -121,6 +121,36 @@ void Cvlink::getBookHistory(QJsonObject obj)
     emit queryBookKeeping(dataArrary);
 }
 
+void Cvlink::bookResults(QJsonObject obj)
+{
+    QString resultCode = obj["resultCode"].toString();
+    if(resultCode == "002001000"){
+        emit bookResult(true, "");
+    } else {
+        emit bookResult(false, obj["msg"].toString());
+    }
+}
+
+void Cvlink::outBookResult(QJsonObject obj)
+{
+    QJsonObject data = obj["data"].toObject();
+    QString resultCode = obj["resultCode"].toString();
+    if(resultCode == "003000000"){
+        emit outBook(data);
+    } else {
+        QString msg = obj["msg"].toString();
+        emit outBookError(msg);
+    }
+}
+
+void Cvlink::picScanResult(QJsonObject obj)
+{
+    QString resultCode = obj["resultCode"].toString();
+    if(resultCode == "002002000"){
+        emit picScan(obj["data"].toObject());
+    }
+}
+
 void Cvlink::replyFinished(QNetworkReply *reply)
 {
     QByteArray bytes = reply->readAll();//这个返回的JSON包所携带的所有信息
@@ -157,7 +187,7 @@ void Cvlink::replyFinished(QNetworkReply *reply)
                 case 840:
                     imelLoginResult(obj);
                     break;
-                case 868928:
+                case 86892811:
                     //loginLogResult(obj);
                     break;
                 case 848:
@@ -175,49 +205,18 @@ void Cvlink::replyFinished(QNetworkReply *reply)
                 case 1966080:
                     getBookHistory(obj);
                     break;
-                case 002000000:
+                case 1968200:
+                    bookResults(obj);
                     break;
-                case 002001000:
+                case 868928:
+                    outBookResult(obj);
                     break;
-                case 002002000:
+                case 1968208:
+                    picScanResult(obj);
                     break;
                 case 003001000:
                     break;
             }
-//            if (value.toVariant().toString() == "000000") {          //使用账户密码登录成功
-//                emit passwordLogin(true);
-//            }else if(value.toVariant().toString() == "000001"){       //使用imel登录成功
-//                emit imelLogin(true);
-//            }else if(value.toVariant().toString() == "001001"){       //请求宿舍用户列表
-//                QString room;
-//                value = obj.value("data");
-//                QJsonObject secondJson = value.toObject();
-//                QString roomId = QString::number(secondJson["id"].toDouble());
-//                if(!secondJson["comment"].toString().isNull()){
-//                    room = secondJson["comment"].toString();
-//                    if(secondJson["users"].isArray()){
-//                        QJsonArray userJsonArray = secondJson["users"].toArray();
-//                        for(int i = 0; i < userJsonArray.size(); i ++){
-//                            QJsonValue childValue = userJsonArray.at(i);
-//                            QJsonObject childObject = childValue.toObject();
-//                            int id = childObject["id"].toDouble();
-//                            QString name = childObject["name"].toString();
-//                            userMap.insert(id, name);
-//                        }
-//                    }
-//                }
-//                emit queryUsers(userMap, roomId, room);
-//            }else if(value.toVariant().toString() == "002000"){       //请求宿舍用户列表
-//                QJsonArray dataArrary = obj.value("data").toArray();
-//                qDebug() << "query success" << endl;
-//                emit queryBookKeeping(dataArrary);
-//            }else if(value.toVariant().toString() == "002001"){       //入账
-//                emit bookResult(true);
-//            }else{
-//                qDebug() << value.toString() << endl;
-//                qDebug() << "result " << "else" << endl;
-
-//            }
         }
     }
 }

@@ -7,12 +7,14 @@ userInfoDialog::userInfoDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setFixedSize(this->width(),this->height());
-//    this->setWindowFlags(Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
+    this->setWindowTitle("个人设置");
+    //    this->setWindowFlags(Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
     ui->changePassWidget->hide();
     ui->changeHeadWidget->hide();
     QPalette p(ui->setUpItem->palette());//设置背景色
     p.setColor(QPalette::Base, QColor("#f0f0f0"));
     ui->setUpItem->setPalette(p);
+    ui->setUpItem->setFocusPolicy(Qt::NoFocus);
     QTreeWidgetItem *changePassItem = new QTreeWidgetItem(ui->setUpItem);
     changePassItem->setText(0, "密码修改");
     changePassItem->setData(0,Qt::UserRole,"changePass");
@@ -25,10 +27,16 @@ userInfoDialog::userInfoDialog(QWidget *parent) :
     connect(ui->setUpItem, &QTreeWidget::itemClicked, this, [=](QTreeWidgetItem * item){
         if(item->data(0, Qt::UserRole) == "changePass"){
             ui->changePassWidget->show();
+            ui->changeHeadWidget->hide();
         } else if(item->data(0, Qt::UserRole) == "changeHead"){
             ui->changeHeadWidget->show();
+            ui->changePassWidget->hide();
+            ui->labelPreHead->hide();
+            ui->pushButtonHeadConfirm->hide();
         }
     });
+    connect(&mainlink, &Cvlink::changePasswordResult, this, &userInfoDialog::changePassResult);
+    connect(&mainlink, &Cvlink::changeHeadResult, this, &userInfoDialog::changeHeadResult);
 }
 
 userInfoDialog::~userInfoDialog()
@@ -72,12 +80,23 @@ void userInfoDialog::on_pushButtonSelect_clicked()
     pixmap->scaled(ui->labelHead->size(), Qt::KeepAspectRatio);
     ui->labelPreHead->setScaledContents(true);
     ui->labelPreHead->setPixmap(*pixmap);
+    ui->labelPreHead->show();
+    ui->pushButtonHeadConfirm->show();
 }
 
 void userInfoDialog::on_pushButtonHeadConfirm_clicked()
 {
     QString path = ui->lineEditPath->text();
-    QString imageMD5 = Global::imageToBase64(path);
+
+
+    QPixmap pixmap(path);
+    pixmap = pixmap.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QString tempPath = QApplication::applicationDirPath() + "/images/head.jpg";
+    QFile files(tempPath);
+    files.open(QIODevice::WriteOnly);
+    pixmap.save(&files, "JPG");
+
+    QString imageMD5 = Global::imageToBase64(tempPath);
     QFile file("C:/Users/Joker/Desktop/temp.txt");
     if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
         file.write(imageMD5.toUtf8());
@@ -87,4 +106,30 @@ void userInfoDialog::on_pushButtonHeadConfirm_clicked()
     QMap<QString, QString> map;
     map.insert("avatar", imageMD5);
     mainlink.postHttpRequest(Global::bookUrl + "/user/updateDetail", map);
+}
+
+void userInfoDialog::changePassResult(bool result, QString msg)
+{
+    if(result){
+        QString close = "false";
+        Global::IMConfig->setValue("login/start", close);
+        close = "";
+        Global::IMConfig->setValue("login/password", close);
+        QMessageBox::warning(this, "警告", "密码设置成功，请重启应用！", "重 启");
+
+        qApp->exit(RETCODE_RESTART);
+    } else {
+        QMessageBox::warning(this, "错误", msg, "OK");
+    }
+}
+
+void userInfoDialog::changeHeadResult(bool result)
+{
+    if(result){
+        QMessageBox::warning(this, "系统", "头像设置成功！", "OK");
+        ui->labelPreHead->hide();
+        ui->pushButtonHeadConfirm->hide();
+        ui->lineEditPath->clear();
+        emit changeHead();
+    }
 }

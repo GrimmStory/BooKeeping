@@ -23,7 +23,12 @@ int main(int argc, char *argv[])
         QMainWindow window;
         MainWindow main(&window);
         main.show();
-        return a.exec();
+        int e = a.exec();
+        if(e == 773){
+            QProcess::startDetached(qApp->applicationFilePath(), QStringList());
+            return 0;
+        }
+        return e;
     }else{
         return 0;
     }

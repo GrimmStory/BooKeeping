@@ -47,6 +47,7 @@ private slots:
     void passwordLogin(bool result, QString msg);
 private:
     Ui::LoginDialog *ui;
+    QString imelStatus;
     QNetworkAccessManager *manager;
     QPoint relativePos;
     QString loginFlag;

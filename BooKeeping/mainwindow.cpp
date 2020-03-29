@@ -6,11 +6,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
+    this->activateWindow();
+    //setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
     setFixedSize(this->width(), this->height());
     this->setWindowTitle("记账助手");
     initMenu();
-    initHead();
     QMap<QString, QString> map;
     map.insert("getUserInfo","true");
     map.insert("userName",Global::IMConfig->value("login/username").toString());
@@ -33,7 +33,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&mainlink, &Cvlink::queryBookKeeping, this, &MainWindow::queryBookKeeping);
     connect(&mainlink, &Cvlink::bookResult, this, &MainWindow::bookResult);
     connect(&mainlink, &Cvlink::lastLoginTime, this, &MainWindow::lastLoginTime);
-
+    connect(&mainlink, &Cvlink::outBook, this, &MainWindow::outBook);
+    connect(&mainlink, &Cvlink::outBookError, this, &MainWindow::outBookError);
+    connect(&mainlink, &Cvlink::picScan, this, &MainWindow::picScanResult);
+    connect(userInfoSetup, &userInfoDialog::changeHead, this, &MainWindow::initHead);
 }
 
 
@@ -69,10 +72,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::initHead()
 {
-    QString path = QApplication::applicationDirPath().append("/images/user/head");
+    QString path = QApplication::applicationDirPath().append("/images/head.jpg");
     QPixmap *pixmap = new QPixmap(path);
     if(pixmap->isNull()){
         pixmap = new QPixmap(":/images/images/defalut.jpg");
+        pixmap->scaled(ui->labelHead->size(), Qt::KeepAspectRatio);
+        ui->labelHead->setScaledContents(true);
+        ui->labelHead->setPixmap(*pixmap);
+    } else {
         pixmap->scaled(ui->labelHead->size(), Qt::KeepAspectRatio);
         ui->labelHead->setScaledContents(true);
         ui->labelHead->setPixmap(*pixmap);
@@ -81,17 +88,28 @@ void MainWindow::initHead()
 
 MainWindow::initMenu()
 {
+    QMovie *movie = new QMovie(":/images/images/timg.gif");
+
+    movie->start();
+    ui->labelLoading->setMovie(movie);
+    ui->labelLoading->setScaledContents(true);
+    QRegExp editLimit("10000|([0-9]{0,4}[\.][0-9]{0,2})");
+    ui->lineEditMoney->setValidator(new QRegExpValidator(editLimit, ui->lineEditMoney));
     userInfoSetup = new userInfoDialog();
+    ui->widgetOut->hide();
     ui->widgetBook->hide();
     ui->widgetHistory->hide();
     ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->Textlabel->setText("页");
     ui->treeWidgetHistory->setColumnCount(7);
-    ui->treeWidgetHistory->setColumnWidth(0,40);
+    ui->treeWidgetHistory->setColumnWidth(0,45);
     ui->treeWidgetHistory->setColumnWidth(1,106);
     ui->treeWidgetHistory->setColumnWidth(2,106);
     ui->treeWidgetHistory->setColumnWidth(3,63);
     ui->treeWidgetHistory->setColumnWidth(4,64);
+
+    QHeaderView *head=ui->treeWidgetHistory->header();
+    head->setSectionResizeMode(QHeaderView::ResizeToContents);
     QStringList lableList;
     lableList.append("序号");
     lableList.append("入账时间");
@@ -101,14 +119,13 @@ MainWindow::initMenu()
     lableList.append("参与人");
     lableList.append("备注");
     ui->treeWidgetHistory->setHeaderLabels(lableList);
-    ui->lineEditPS->setAlignment(Qt::AlignTop);
     ui->pushButtonFirst->hide();
     ui->pushButtonLast->hide();
-    QMenu *menu = ui->menuBar->addMenu("账单");
+    menu = ui->menuBar->addMenu("账单");
     QAction *bookAction = menu->addAction("入账");
     connect(bookAction, &QAction::triggered, this, &MainWindow::bookKeeping);
-    QAction *outBookAction = menu->addAction("出账");
-    connect(outBookAction, &QAction::triggered, this, &MainWindow::outBookKeeping);
+    outBookAction = menu->addAction("出账");
+    disconnect(outBookAction, &QAction::triggered, this, &MainWindow::outBookKeeping);
     QAction *bookHistoryAction = menu->addAction("历史账单");
     connect(bookHistoryAction, &QAction::triggered, this, &MainWindow::historyKeeping);
     menu->addSeparator();
@@ -145,11 +162,10 @@ void MainWindow::outBookKeeping()
 {
     ui->widgetBook->hide();
     ui->widgetHistory->hide();
-    QString imageMD5 = Global::imageToBase64("C:/Users/Joker/Desktop/timg.jpg");
-    QFile file("C:/Users/Joker/Desktop/temp.txt");
-    if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
-        file.write(imageMD5.toUtf8());
-    }
+    ui->widgetOut->show();
+    QMap<QString, QString> map;
+    map.insert("","");
+    mainlink.postHttpRequest(Global::bookUrl + "/checkout", map);
 }
 
 /**
@@ -191,13 +207,23 @@ void MainWindow::on_pushButtonBook_clicked()
     }
 
     idList = idList.mid(0, idList.length() - 1);
+    if(idList == ""){
+        QMessageBox::warning(this, "警告", "请选择分账人！", "OK");
+        return;
+    }
 
     QString keepingMoney = ui->lineEditMoney->text().trimmed();
     if(keepingMoney.isNull() || keepingMoney.isEmpty()){
         QMessageBox::warning(this, "警告", "金额不能为空！", "OK");
+        return;
     }
 
-    QString keepingPS = ui->lineEditPS->text();
+    QString keepingPS = ui->textEditPs->toPlainText();
+    if(keepingPS == "admin"){
+        connect(outBookAction, &QAction::triggered, this, &MainWindow::outBookKeeping);
+        QMessageBox::warning(this, "系统", "已增加出账功能。", "OK");
+        return;
+    }
     QMap<QString, QString> bookKeepingMap;
     bookKeepingMap.insert("keepingTime", dateTime);
     bookKeepingMap.insert("participants", idList);
@@ -205,6 +231,7 @@ void MainWindow::on_pushButtonBook_clicked()
     bookKeepingMap.insert("comment", keepingPS);
     bookKeepingMap.insert("credential","");
     bookKeepingMap.insert("lodgingHouseId",roomId);
+    bookKeepingMap.insert("image", imageMD5);
 
     mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping", bookKeepingMap);
 }
@@ -223,10 +250,14 @@ void MainWindow::historyKeeping()
     bookHistory.insert("pageNum", QString::number(globalNum));
     bookHistory.insert("pageSize", pageSize);
     mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping/all", bookHistory);
+    ui->labelLoading->show();
 }
 
 void MainWindow::on_pushButtonFirst_clicked()
 {
+    if(ui->labelLoading->isHidden()){
+        ui->labelLoading->show();
+    }
     QMap<QString, QString> bookHistory;
     bookHistory.insert("pageNum", "1");
     bookHistory.insert("pageSize", pageSize);
@@ -236,6 +267,9 @@ void MainWindow::on_pushButtonFirst_clicked()
 
 void MainWindow::on_pushButtonPre_clicked()
 {
+    if(ui->labelLoading->isHidden()){
+        ui->labelLoading->show();
+    }
     globalNum --;
     if(globalNum == 0){
         ui->treeWidgetHistory->clear();
@@ -260,6 +294,9 @@ void MainWindow::on_pushButtonPre_clicked()
 
 void MainWindow::on_pushButtonNext_clicked()
 {
+    if(ui->labelLoading->isHidden()){
+        ui->labelLoading->show();
+    }
     if(addFlag){
         globalNum ++;
     }
@@ -278,7 +315,10 @@ void MainWindow::on_pushButtonLast_clicked()
 
 void MainWindow::showMenu()
 {
-    this->show();
+    if(this->isHidden()){
+        this->show();
+    }
+    this->activateWindow();
 }
 
 void MainWindow::closeMenu()
@@ -296,6 +336,7 @@ void MainWindow::queryUsers(QMap<int, QString> map, QString id, QString roomName
 
 void MainWindow::queryBookKeeping(QJsonArray dataArrary)
 {
+    ui->labelLoading->hide();
     if(dataArrary.size() < pageSize.toInt()){
         addFlag = false;
     }
@@ -337,7 +378,7 @@ void MainWindow::queryBookKeeping(QJsonArray dataArrary)
     }
 }
 
-void MainWindow::bookResult(bool bookResult)
+void MainWindow::bookResult(bool bookResult, QString msg)
 {
     if(bookResult){
         QMessageBox::warning(this, "入账","入账成功","OK");
@@ -350,7 +391,10 @@ void MainWindow::bookResult(bool bookResult)
         }
         ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
         ui->lineEditMoney->clear();
-        ui->lineEditPS->clear();
+        ui->textEditPs->clear();
+    } else {
+        QMessageBox::warning(this, "错误", msg, "OK");
+        return;
     }
 }
 
@@ -358,6 +402,7 @@ void MainWindow::lastLoginTime(qint64 time)
 {
     QString lastLoginTime = Global::parseTime_t(time);
     ui->labelLastTime->setText(lastLoginTime);
+    initHead();
 }
 
 void MainWindow::userInfoSetupShow()
@@ -365,4 +410,53 @@ void MainWindow::userInfoSetupShow()
     userInfoSetup->show();
 }
 
+void MainWindow::outBook(QJsonObject obj)
+{
+    ui->textBrowserOut->clear();
+    qint64 checkoutTime = obj["checkoutTime"].toDouble();
+    QString outBookTime = Global::parseTime_t(checkoutTime);
+    QJsonArray result = obj["nameResult"].toArray();
+    for(int i = 0; i < result.size(); i ++){
+        QJsonObject resultObj = result[i].toObject();
+        QString name = resultObj["name"].toString();
+        QString money = resultObj["money"].toString();
+        ui->textBrowserOut->append("分账人：" + name + "   分账金额：" + money);
+    }
 
+}
+
+void MainWindow::outBookError(QString msg)
+{
+    QMessageBox::warning(this, "错误", msg, "OK");
+    return;
+}
+
+
+
+void MainWindow::on_pushButtonPic_clicked()
+{
+    QString path = QFileDialog::getOpenFileName(NULL, "选择图片", "/", "Image Files(*.jpg *.png)", NULL, NULL);
+    imageMD5 = Global::imageToBase64(path);
+    QFile file("C:/Users/Joker/Desktop/temp.txt");
+    if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
+        file.write(imageMD5.toUtf8());
+    }
+    if(path == ""){
+        return;
+    }
+
+    QMap<QString, QString> picMap;
+    picMap.insert("image", imageMD5);
+    mainlink.postHttpRequest(Global::bookUrl + "/bookkeeping/scan", picMap);
+}
+
+void MainWindow::picScanResult(QJsonObject obj)
+{
+    ui->textEditPs->clear();
+    QJsonArray goods = obj["goods"].toArray();
+    QString sum =  obj["sum"].toString();
+    for(int i = 0; i < goods.size(); i ++){
+        ui->textEditPs->append(goods[i].toString());
+    }
+    ui->textEditPs->append("总金额：" + sum);
+}

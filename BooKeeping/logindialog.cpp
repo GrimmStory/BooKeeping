@@ -25,7 +25,11 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->labelVersion->setStyleSheet("QLabel {background-color: transparent;}");
     ui->labelTitle->setStyleSheet("QLabel {background-color: transparent;}");
 
-    QPixmap *pixmap = new QPixmap(":/images/images/Head.png");
+     QPixmap *pixmap = new QPixmap(QApplication::applicationDirPath() + "/images/head.jpg");
+    if(pixmap->isNull()){
+       pixmap = new QPixmap(":/images/images/Head.png");
+    }
+
     pixmap->scaled(ui->labeHead->size(), Qt::KeepAspectRatio);
     ui->labeHead->setScaledContents(true);
     ui->labeHead->setPixmap(*pixmap);
@@ -56,12 +60,17 @@ LoginDialog::LoginDialog(QWidget *parent) :
     if(userName.isNull() || userName.isEmpty()){
         showLoginMenu();
     }
-    mainlink.setUrl(Global::bookUrl + "/user/loginByImel");
-    QJsonObject json;
-    json.insert("account",userName);
-    json.insert("imel",UUID);
-    mainlink.setJson(json);
-    mainlink.post();
+    imelStatus = Global::IMConfig->value("login/start").toString();
+    if(imelStatus != "true"){
+        showLoginMenu();
+    } else {
+        mainlink.setUrl(Global::bookUrl + "/user/loginByImel");
+        QJsonObject json;
+        json.insert("account",userName);
+        json.insert("imel",UUID);
+        mainlink.setJson(json);
+        mainlink.post();
+    }
     connect(&mainlink, &Cvlink::imelLogin, this, &LoginDialog::imelResult);
     connect(&mainlink, &Cvlink::passwordLogin, this, &LoginDialog::passwordLogin);
 }
@@ -108,6 +117,7 @@ bool LoginDialog::eventFilter(QObject *obj, QEvent *event)
     } else if(obj == ui->labelChangeName){
         if(event->type()==QEvent::MouseButtonPress)
         {
+            loginFlag = "failed";
             showLoginMenu();
         }
     }
@@ -124,7 +134,7 @@ void LoginDialog::mouseReleaseEvent(QMouseEvent *event){
 
 void LoginDialog::on_pushButtonLogin_clicked()
 {
-    if(loginFlag == "false"){
+    if(loginFlag == "failed"){
         QString username = ui->lineEditUser->text().trimmed();
         QString password = ui->lineEditPass->text().trimmed();
 
@@ -179,6 +189,9 @@ void LoginDialog::passwordLogin(bool result, QString msg)
             Global::IMConfig->setValue("login/password",passWord);
         }
         this->accept();
+        if(imelStatus == "" || imelStatus == "false"){
+            Global::IMConfig->setValue("login/start", "true");
+        }
     } else {
         loginFlag = "failed";
         QMessageBox::warning(this, "错误", msg, "OK");
@@ -193,7 +206,7 @@ void LoginDialog::passwordLogin(bool result, QString msg)
 */
 LoginDialog::showLoginMenu()
 {
-    loginFlag = "false";
+    loginFlag = "failed";
     ui->labelLittelHead->show();
     ui->labeHead->hide();
     ui->lineEditUser->show();

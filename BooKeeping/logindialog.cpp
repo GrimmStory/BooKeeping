@@ -8,6 +8,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->setupUi(this);
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowTitle("登录");
     this->setWindowIcon(QIcon(":/images/images/icon.png"));
     this->installEventFilter(this);
 

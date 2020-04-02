@@ -14,7 +14,8 @@ int main(int argc, char *argv[])
 #ifdef QT_NO_DEBUG
     Global::bookUrl = "https://bookkeeping.javed.club";
 #else
-    Global::bookUrl = "https://bookkeeping-test.javed.club";
+    //Global::bookUrl = "https://bookkeeping-test.javed.club";
+    Global::bookUrl = "https://bookkeeping.javed.club";
 #endif
 
     LoginDialog *loginDialog = new LoginDialog();

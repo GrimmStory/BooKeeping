@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mainlink.postHttpRequest(Global::bookUrl + "/user/getDetail", map);
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon();
     trayIcon->setToolTip("BOOK");
-    trayIcon->setIcon(QIcon(":/images/images/desktop.png"));
+    trayIcon->setIcon(QIcon(":/images/images/icon.png"));
     reSetAction = new QAction(tr("最大化"), this);
     connect(reSetAction, &QAction::triggered, this, MainWindow::showMenu);
     quitAction = new QAction(tr("退出"), this);
@@ -68,7 +68,17 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
-   return MainWindow::eventFilter(obj, event);
+    return MainWindow::eventFilter(obj, event);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(QMessageBox::question(this, tr("Quit"), tr("确定退出此程序?"),QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes){
+       qApp->quit();
+    }
+    else{
+        event->ignore();
+    }
 }
 
 void MainWindow::initHead()

@@ -17,6 +17,7 @@
 #include <QResizeEvent>
 #include <QSystemTrayIcon>
 #include <QRegExpValidator>
+#include <QCloseEvent>
 #include <QEvent>
 #include <QMovie>
 #include "cvlink.h"
@@ -36,6 +37,7 @@ public:
     ~MainWindow();
 protected:
     virtual bool eventFilter(QObject *obj, QEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *manager;

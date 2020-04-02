@@ -8,6 +8,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->setupUi(this);
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowIcon(QIcon(":/images/images/icon.png"));
     this->installEventFilter(this);
 
     ui->labeHead->setMouseTracking(true);

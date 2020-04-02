@@ -87,3 +87,8 @@ MainWindow QTreeWidget#treeWidgetHistory::item::hover{
      background-color:#F0F0F0;
 }
 
+MainWindow QTreeWidget#treeWidgetPerson{
+     background-color:#F0F0F0;
+     border:0px;
+}
+

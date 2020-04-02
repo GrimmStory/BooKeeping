@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->activateWindow();
     //setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
     setFixedSize(this->width(), this->height());
+    this->setWindowIcon(QIcon(":/images/images/icon.png"));
     this->setWindowTitle("记账助手");
     initMenu();
     QMap<QString, QString> map;

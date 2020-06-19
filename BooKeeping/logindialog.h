@@ -8,6 +8,8 @@
 #include <QNetworkReply>
 #include <QJsonObject>
 #include <QDebug>
+#include <QPainter>
+#include <QPalette>
 #include <QJsonDocument>
 #include <QMouseEvent>
 #include <QDesktopWidget>
@@ -55,6 +57,7 @@ private:
     QString userName;
     QString passWord;
     showLoginMenu();
+    void initIcon();
 
 };
 

@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->activateWindow();
     //setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setFixedSize(this->width(), this->height());
+    //setFixedSize(this->width(), this->height());
     this->setWindowIcon(QIcon(":/images/images/icon.png"));
     this->setWindowTitle("记账助手");
     initMenu();
@@ -73,7 +73,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(QMessageBox::question(this, tr("Quit"), tr("确定退出此程序?"),QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes){
+    if(QMessageBox::question(this, tr("退出"), tr("确定退出此程序?"),QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes){
        qApp->quit();
     }
     else{
@@ -373,10 +373,10 @@ void MainWindow::queryBookKeeping(QJsonArray dataArrary)
 
         QTreeWidgetItem *item = new QTreeWidgetItem();
         item->setText(0, QString::number(id));
-        item->setText(1, keepTime);
-        item->setToolTip(1, keepTime);
-        item->setText(2, enTime);
-        item->setToolTip(2, enTime);
+        item->setText(1, enTime);
+        item->setToolTip(1, enTime);
+        item->setText(2, keepTime);
+        item->setToolTip(2, keepTime);
         item->setText(3, payerName);
         item->setText(4, QString::number(data["money"].toDouble(),10,2));
         QString participantPerson = participantList.join(",");
@@ -448,7 +448,7 @@ void MainWindow::on_pushButtonPic_clicked()
 {
     QString path = QFileDialog::getOpenFileName(NULL, "选择图片", "/", "Image Files(*.jpg *.png)", NULL, NULL);
     imageMD5 = Global::imageToBase64(path);
-    QFile file("C:/Users/Joker/Desktop/temp.txt");
+    QFile file("D:/temp.txt");
     if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
         file.write(imageMD5.toUtf8());
     }

@@ -22,10 +22,42 @@ userInfoDialog QPushButton#pushButtonConfirm::hover{
 }
 
 /*******************************LoginDialog*******************************************************/
-LoginDialog QWidget#widgetGround{
-    background-color:#F0F0F0;
+LoginDialog QWidget#widgetBackGround{
+    background-color:#FcFcFc;
+    border:1px solid grey;
+    border-radius:2px;
 }
 
+LoginDialog QWidget#widgetGround{
+    background-color:#FcFcFc;
+}
+
+LoginDialog QLabel#labelName{
+
+}
+
+LoginDialog QLabel#labelPass{
+
+}
+
+LoginDialog QLineEdit#lineEditUser{
+    border:1px solid grey;
+    background-color:#FcFcFc;
+    /*border-radius:4px;*/
+    border-right:None;
+    border-left:None;
+    border-top:None;
+}
+
+LoginDialog QLineEdit#lineEditPass{
+    border:1px solid grey;
+    background-color:#FcFcFc;
+/*    border-radius:4px;*/
+    border-right:None;
+    border-left:None;
+    border-top:None;
+    width:100px
+}
 
 LoginDialog QPushButton#pushButtonClose{
     border-image:url(:/images/images/button_close.png);
@@ -36,12 +68,26 @@ LoginDialog QPushButton#pushButtonClose::hover{
 }
 
 LoginDialog QPushButton#pushButtonLogin{
-    border-right:1px solid #0ab197;
+    border:1px solid #0ab197;
+    border-radius:10px;
+}
+
+LoginDialog QPushButton#pushButtonLogin::hover{
+    background-color:#B0E0E6;
+}
+
+LoginDialog QPushButton#pushButtonLogin::pressed{
+    background-color:#5F9EA0;
 }
 
 LoginDialog QLabel#labeHead{
     border:1px solid grey;
 }
+
+LoginDialog QLabel#labelChangeName::hover{
+    color:#B0E0E6;
+}
+
 
 /*******************************MainWindow*******************************************************/
 

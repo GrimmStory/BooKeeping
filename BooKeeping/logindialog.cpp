@@ -16,42 +16,27 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->labelChangeName->setMouseTracking(true);
     ui->labelChangeName->installEventFilter(this);
     ui->labeHead->installEventFilter(this);
-    ui->labelLittelHead->hide();
-    ui->labelLittelHead->hide();
-    ui->lineEditUser->hide();
-    ui->lineEditPass->hide();
-    ui->pushButtonLogin->setText("登录");
+    ui->widgetGround->setWindowOpacity(0.7);
+    ui->widgetImel->show();
+    ui->widgetPass->hide();
     ui->labelChangeName->setText("切换用户");
     ui->labelTitle->setText(Global::IMConfig->value("labelTitle/title").toString());
     ui->labelVersion->setText(Global::IMConfig->value("labelTitle/version").toString());
     ui->labelVersion->setStyleSheet("QLabel {background-color: transparent;}");
     ui->labelTitle->setStyleSheet("QLabel {background-color: transparent;}");
 
-     QPixmap *pixmap = new QPixmap(QApplication::applicationDirPath() + "/images/head.jpg");
-    if(pixmap->isNull()){
-       pixmap = new QPixmap(":/images/images/Head.png");
-    }
-
-    pixmap->scaled(ui->labeHead->size(), Qt::KeepAspectRatio);
-    ui->labeHead->setScaledContents(true);
-    ui->labeHead->setPixmap(*pixmap);
-
-    ui->labelLittelHead->setScaledContents(true);
-    ui->labelLittelHead->setPixmap(*pixmap);
-
+    initIcon();
     QFile fileInit(":/bookKeeping.qss");
     if(fileInit.open(QFile::ReadOnly)){
         qApp->setStyleSheet(QLatin1String(fileInit.readAll()));
         fileInit.close();
     }
 
-    QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect();
-    effect->setOffset(3);
-    effect->setColor(QColor(43, 43, 43));
-    effect->setBlurRadius(10);
-    ui->pushButtonLogin->setGraphicsEffect(effect);
-    ui->widgetGround->setGraphicsEffect(effect);
-    ui->pushButtonLogin->hide();
+//    QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect();
+//    effect->setOffset(3);
+//    effect->setColor(QColor(43, 43, 43));
+//    effect->setBlurRadius(1 0);
+//    ui->widgetBackGround->setGraphicsEffect(effect);
 
     QString cpuId = Global::getWMIC("wmic cpu get processorid");
     QString serialNumber = Global::getWMIC("wmic diskdrive get serialnumber");
@@ -209,12 +194,26 @@ void LoginDialog::passwordLogin(bool result, QString msg)
 LoginDialog::showLoginMenu()
 {
     loginFlag = "failed";
-    ui->labelLittelHead->show();
-    ui->labeHead->hide();
-    ui->lineEditUser->show();
-    ui->lineEditPass->show();
-    ui->lineEditPass->setText(Global::IMConfig->value("login/password").toString());
-    ui->lineEditUser->setText(Global::IMConfig->value("login/username").toString());
-    ui->labelChangeName->hide();
-    ui->pushButtonLogin->show();
+    ui->widgetPass->show();
+    ui->widgetImel->hide();
+}
+
+void LoginDialog::initIcon()
+{
+    QPixmap *pixmap = new QPixmap(QApplication::applicationDirPath() + "/images/head.jpg");
+    if(pixmap->isNull()){
+        pixmap = new QPixmap(":/images/images/Head.png");
+    }
+    pixmap->scaled(ui->labeHead->size(), Qt::KeepAspectRatio);
+    ui->labeHead->setScaledContents(true);
+    ui->labeHead->setPixmap(*pixmap);
+
+
+    QPixmap pixMap= pixmap->scaled(100,100, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    pixMap =  Global::PixmapToRound(pixMap, 50);
+    ui->labelLittelHead->setPixmap(pixMap);
+
+    QPalette pal = ui->widgetBackGround->palette();
+    pal.setBrush(QPalette::Background, QBrush(QPixmap(QApplication::applicationDirPath() + "/images/bg.jpg")));
+    ui->widgetBackGround->setPalette(pal);
 }
